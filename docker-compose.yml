@@ -2,11 +2,27 @@ version: '3.4'
 
 services:
   gamebackend:
-    image: gamebackend
+    container_name: gamebackend
+    restart: always
     build:
-      context: .
+      context: ./gameBackend
       dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
     ports:
-      - 3000:3000
+      - 80:3000
+    links:
+      - mongo
+  auth:
+    container_name: authserver
+    restart: always
+    build:
+      context: ./auth
+      dockerfile: ./Dockerfile
+    ports:
+      - 300:3300
+  mongo:
+    container_name: mongo
+    build:
+      context: ./DB
+      dockerfile: ./Dockerfile
+    ports:
+      - 2170:21017

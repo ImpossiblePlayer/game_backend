@@ -1,5 +1,15 @@
 {
-  "dependencies": {
-    "express": "^4.18.2"
-  }
+	"name": "game_backend",
+	"version": "0.0.1",
+	"description": "",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/ImpossiblePlayer/game_backend.git"
+	},
+	"author": "impossiblePlayer (Ivan Pronin)",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/ImpossiblePlayer/game_backend/issues"
+	},
+	"homepage": "https://github.com/ImpossiblePlayer/game_backend#readme"
 }
