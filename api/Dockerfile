@@ -10,6 +10,8 @@ RUN yarn
 
 RUN yarn build
 
-EXPOSE 3300
+ENV PORT=3000
 
-CMD ["npm", "start"]
+EXPOSE ${PORT}
+
+CMD ["yarn", "start"]

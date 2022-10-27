@@ -1,28 +1,36 @@
-version: '3.4'
+version: '3.7'
 
 services:
-  gamebackend:
-    container_name: gamebackend
+  apiserver:
+    container_name: apiserver
     restart: always
-    build:
-      context: ./gameBackend
-      dockerfile: ./Dockerfile
+    env_file:
+      - ./api/.env
+    build: ./api
     ports:
-      - 80:3000
+      - 8080:3000
     links:
       - mongo
-  auth:
-    container_name: authserver
-    restart: always
-    build:
-      context: ./auth
-      dockerfile: ./Dockerfile
-    ports:
-      - 300:3300
+    networks:
+      - app
+
   mongo:
+    image: mongo:latest
     container_name: mongo
-    build:
-      context: ./DB
-      dockerfile: ./Dockerfile
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: admin
+    #   MONGO_INITDB_ROOT_PASSWORD: pskrhbvkshl2i9r870k
     ports:
-      - 2170:21017
+      - 2170:27017
+    networks:
+      - app
+    volumes:
+      - mongo-data:/data/db
+
+networks: # изолируем от другик контейнеров на сервере
+  app:
+    driver: bridge
+volumes:
+  mongo-data:
+    driver: local
+
