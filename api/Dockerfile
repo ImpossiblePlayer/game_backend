@@ -1,17 +1,16 @@
-FROM node
+FROM node:18-alpine
 
 ENV NODE_ENV=development
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY . .
-
+COPY package.json .
 RUN yarn
 
-RUN yarn build
+COPY . .
+RUN yarn run build
 
 ENV PORT=3000
-
 EXPOSE ${PORT}
 
-CMD ["yarn", "start"]
+CMD ["yarn", "run", "start"]

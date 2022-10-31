@@ -1,10 +1,10 @@
 import mongoose, { Schema, model } from 'mongoose';
 
-export interface UserResult<T> extends mongoose.Document {
+interface UserResult<T> extends mongoose.Document {
 	_doc: T;
 }
 
-export interface User extends UserResult<User> {
+interface User extends UserResult<User> {
 	nickname: string;
 	email: string;
 	passwordHash: string;
