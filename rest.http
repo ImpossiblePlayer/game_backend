@@ -1,0 +1,24 @@
+GET http://localhost:8080/auth/me/
+Content-Type: application/json
+Authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MzVlNmE0ODgwNDZkMjU5NjBkMmYxMmEiLCJpYXQiOjE2NjcxMzE5NzYsImV4cCI6MTY2NzczNjc3Nn0.TvMe5gnlvN7Um8HPrBXOb672Nsh0ANvTVECYmG8SFLk"
+
+
+
+###
+POST http://localhost:8080/auth/register/
+Content-Type: application/json
+
+{
+  "email": "email@server.com",
+  "password": "password",
+  "nickname": "nickname"
+}
+
+###
+POST http://localhost:8080/auth/login/
+Content-Type: application/json
+
+{
+  "email": "email@server.com",
+  "password": "password",
+}

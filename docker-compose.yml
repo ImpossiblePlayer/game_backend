@@ -1,21 +1,9 @@
 version: '3.7'
 
 services:
-  apiserver:
-    container_name: apiserver
-    restart: always
-    env_file:
-      - ./api/.env
-    build: ./api
-    ports:
-      - 8080:3000
-    links:
-      - mongo
-    networks:
-      - app
-
   mongo:
     image: mongo:latest
+    restart: always
     container_name: mongo
     # environment:
     #   MONGO_INITDB_ROOT_USERNAME: admin
@@ -26,6 +14,22 @@ services:
       - app
     volumes:
       - mongo-data:/data/db
+  apiserver:
+    container_name: apiserver
+    restart: always
+    environment:
+      PORT: 3000
+      DB_URI: mongodb://mongo:27017
+      DBNAME: users
+      SECRET: dlbjlfbdijlsvmld
+      TOKEN_LIFETIME: 7d
+    build: ./api
+    ports:
+      - 8080:3000
+    links:
+      - mongo
+    networks:
+      - app
 
 networks: # изолируем от другик контейнеров на сервере
   app:
