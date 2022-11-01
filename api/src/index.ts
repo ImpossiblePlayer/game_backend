@@ -35,14 +35,14 @@ export const app = express();
 
 export const server = http.createServer(app);
 
-mongoose
-	.connect(`${DB_URI}/${DBNAME}`)
-	.then(() => {
-		console.log('DB ok');
-	})
-	.catch((err) => {
-		console.log('DB error: ' + err);
-	});
+// mongoose
+// 	.connect(`${DB_URI}/${DBNAME}`)
+// 	.then(() => {
+// 		console.log('DB ok');
+// 	})
+// 	.catch((err) => {
+// 		console.log('DB error: ' + err);
+// 	});
 
 app.use(express.json());
 app.use(cors());

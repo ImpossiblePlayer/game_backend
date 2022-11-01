@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3'
 
 services:
   mongo:
@@ -23,10 +23,12 @@ services:
       DBNAME: users
       SECRET: dlbjlfbdijlsvmld
       TOKEN_LIFETIME: 7d
-    build: ./api
+    build:
+      context: ./api
+      dockerfile: Dockerfile
     ports:
       - 8080:3000
-    links:
+    depends_on:
       - mongo
     networks:
       - app
