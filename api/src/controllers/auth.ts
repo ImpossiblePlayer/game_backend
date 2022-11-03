@@ -1,28 +1,28 @@
+import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { validationResult } from 'express-validator';
 
 require('dotenv').config(); // переменные из .env файла
-
 import { HTTP_STATUSES } from '../index';
 
-import UserModel from '../models/users';
+import { UserModel } from '../models';
+
+import {
+	TypedGetMeBodyReq,
+	TypedLoginBodyReq,
+	TypedRegisterBodyReq,
+} from '../types';
 
 // константы для JWT
 const SECRET = process.env.SECRET;
 const TOKEN_LIFETIME = process.env.TOKEN_LIFETIME;
 
-const Register = async (req, res) => {
+const Register = async (req: TypedRegisterBodyReq, res: Response<{}>) => {
 	try {
-		// если валидация запроса возвращает ошибки, возвращаем 404
-		if (!validationResult(req).isEmpty()) {
-			return res.status(HTTP_STATUSES.BAD_REQUEST_400);
-		}
-
 		// хэширование пароля
-		const password = req.body.password;
+		const password: string = req.body.password;
 		const salt = await bcrypt.genSalt(10);
-		const hash = await bcrypt.hash(password, salt);
+		const hash: string = await bcrypt.hash(password, salt);
 
 		// создаем нового пользователя
 		const doc = new UserModel({
@@ -34,12 +34,12 @@ const Register = async (req, res) => {
 		const user = await doc.save(); // сохраняем пользователя в БД
 
 		// создаем токен, который работает <TOKEN_LIFETIME> по времени
-		const token = jwt.sign({ _id: user._id }, SECRET, {
+		const token: string = await jwt.sign({ _id: user._id }, SECRET, {
 			expiresIn: TOKEN_LIFETIME,
 		});
 
 		// отделяем хэш пароля от всего остального ...
-		const { passwordHash, ...userData } = user._doc;
+		const { passwordHash, ...userData } = await user._doc;
 		// ... и возвращаем вместе с токеном
 		res.status(HTTP_STATUSES.CREATED_201).json({ ...userData, token });
 	} catch (err) {
@@ -50,12 +50,8 @@ const Register = async (req, res) => {
 	}
 };
 
-const Login = async (req, res) => {
+const Login = async (req: TypedLoginBodyReq, res: Response) => {
 	try {
-		// если валидация запроса возвращает ошибки, возвращаем 404
-		if (!validationResult(req).isEmpty()) {
-			return res.status(HTTP_STATUSES.BAD_REQUEST_400);
-		}
 		const user = await UserModel.findOne({ email: req.body.email });
 		// если пользователь не существует, возвращаем 404
 		if (!user) {
@@ -65,7 +61,7 @@ const Login = async (req, res) => {
 		}
 
 		// если пользователь существует, сравниваем хэш введенного пароля с хэшем из БД
-		const isValidPassword = await bcrypt.compare(
+		const isValidPassword: boolean = await bcrypt.compare(
 			req.body.password,
 			user._doc.passwordHash
 		);
@@ -77,7 +73,7 @@ const Login = async (req, res) => {
 				.json('invalid login or password');
 		}
 
-		const token = jwt.sign({ _id: user._id }, SECRET, {
+		const token: string = jwt.sign({ _id: user._id }, SECRET, {
 			expiresIn: TOKEN_LIFETIME,
 		});
 
@@ -85,8 +81,6 @@ const Login = async (req, res) => {
 		const { passwordHash, ...userData } = user._doc;
 		// ... и возвращаем вместе с токеном
 		res.status(HTTP_STATUSES.OK_200).json({ ...userData, token });
-
-		res.status();
 	} catch (err) {
 		console.log(err);
 		res
@@ -95,7 +89,7 @@ const Login = async (req, res) => {
 	}
 };
 
-const GetMe = async (req, res) => {
+const GetMe = async (req: TypedGetMeBodyReq, res: Response) => {
 	try {
 		const user = await UserModel.findById(req.userId);
 
@@ -105,7 +99,7 @@ const GetMe = async (req, res) => {
 				.json({ message: 'user not found' });
 		}
 		// отделяем хэш пароля от всего остального ...
-		const { passwordHash, ...userData } = user._doc;
+		const { passwordHash, ...userData } = await user._doc;
 		// ... и возвращаем вместе с токеном
 		res.status(HTTP_STATUSES.OK_200).json(userData);
 	} catch (err) {

@@ -2,15 +2,22 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import mongoose from 'mongoose';
+import { WebSocket } from 'ws';
 
 require('dotenv').config(); // переменные из .env файла
 
 // валидация
 import { regValidation, loginValidation } from './validation/authValid';
 
-// фунцкии эндпоинтов
-import * as UserControllers from './controllers/auth';
-import { checkAuth } from './utils/checkauth';
+// фунцкии эндпоинтов и webSocket
+import {
+	ProfileControllers,
+	SessionControllers,
+	UserControllers,
+	WSController,
+} from './controllers';
+
+import Utils from './utils';
 
 // константы базы данных
 // const DBUSERNAME = process.env.DBUSERNAME;
@@ -32,26 +39,51 @@ export const HTTP_STATUSES = {
 const port = process.env.PORT ?? 3000;
 
 export const app = express();
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
 
-export const server = http.createServer(app);
-
-// mongoose
-// 	.connect(`${DB_URI}/${DBNAME}`)
-// 	.then(() => {
-// 		console.log('DB ok');
-// 	})
-// 	.catch((err) => {
-// 		console.log('DB error: ' + err);
-// 	});
+mongoose
+	.connect(`${DB_URI}/${DBNAME}`)
+	.then(() => {
+		console.log('DB ok');
+	})
+	.catch((err) => {
+		console.log('DB error: ' + err);
+	});
 
 app.use(express.json());
 app.use(cors());
 
-app.post('/auth/register', regValidation, UserControllers.Register);
+app.post(
+	'/auth/register',
+	regValidation,
+	Utils.handleValidationErrors,
+	UserControllers.Register
+);
+app.post(
+	'/auth/login',
+	loginValidation,
+	Utils.handleValidationErrors,
+	UserControllers.Login
+);
+app.get('/auth/me', Utils.checkAuth, UserControllers.GetMe);
 
-app.post('/auth/login', loginValidation, UserControllers.Login);
+app.post(
+	'/profile/changenickname',
+	Utils.checkAuth,
+	ProfileControllers.changeNickname
+);
+app.post(
+	'/profile/changepassword',
+	Utils.checkAuth,
+	ProfileControllers.changePassword
+);
 
-app.get('/auth/me', checkAuth, UserControllers.GetMe);
+app.post('/session/join/:id', Utils.checkAuth, SessionControllers.JoinSession);
+
+wss.on('connection', (ws) => {
+	WSController(wss, ws, WebSocket);
+});
 
 server.listen(port, () => {
 	console.log(`listening on port ${port}`);
