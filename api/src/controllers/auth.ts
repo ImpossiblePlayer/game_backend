@@ -6,7 +6,7 @@ import cookieparsers from 'cookie-parser';
 import { HTTP_STATUSES } from '../index';
 
 const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
-const TOKEN_LIFETIME = process.env.TOKEN_LIFETIME;
+const JWT_ACCESS_TOKEN_LIFETIME = process.env.JWT_ACCESS_TOKEN_LIFETIME;
 
 import { UserModel } from '../models';
 
@@ -64,7 +64,7 @@ const Login = async (req: TypedLoginBodyReq, res: Response) => {
 		}
 
 		const token: string = jwt.sign({ _id: user._id }, JWT_ACCESS_SECRET, {
-			expiresIn: TOKEN_LIFETIME,
+			expiresIn: JWT_ACCESS_TOKEN_LIFETIME,
 		});
 
 		// отделяем хэш пароля от всего остального ...

@@ -111,6 +111,6 @@
 		// that act like './node_modules/@types'. */,
 		"sourceMap": true
 	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "**/*.spec.ts", "jest.config.js", "__texsts__"]
+	"include": ["src/"],
+	"exclude": ["node_modules", "**/*.spec.ts", "jest.config.js", "__tests__"]
 }

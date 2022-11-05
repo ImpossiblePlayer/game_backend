@@ -24,7 +24,7 @@ import { checkAuth } from './utils/checkAuth';
 // const DBUSERNAME = process.env.DBUSERNAME;
 // const DBPASSWORD = process.env.DBPASSWORD;
 const DB_URI = process.env.DB_URI;
-const DBNAME = process.env.DBNAME;
+const DB_NAME = process.env.DB_NAME;
 
 export const HTTP_STATUSES = {
 	OK_200: 200,
@@ -100,7 +100,7 @@ io.on('connection', (socket) => {
 (async () => {
 	try {
 		await mongoose
-			.connect(`${DB_URI}/${DBNAME}`)
+			.connect(`${DB_URI}/${DB_NAME}`)
 			.then(() => {
 				console.log('DB ok');
 			})

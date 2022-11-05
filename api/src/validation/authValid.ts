@@ -1,5 +1,4 @@
 import { body } from 'express-validator';
-import { UserModel } from '../models';
 
 const regValidation = [
 	body('email').isEmail(),

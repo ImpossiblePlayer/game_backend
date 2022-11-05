@@ -10,33 +10,32 @@ services:
     #   MONGO_INITDB_ROOT_PASSWORD: pskrhbvkshl2i9r870k
     ports:
       - 2170:27017
-    networks:
-      - app
+    # networks:
+    #   - app
     volumes:
       - mongo-data:/data/db
-  apiserver:
-    container_name: apiserver
-    restart: always
-    env_file:
-      - ./api/.env
-    environment:
-      - PORT=3000
-      - DB_URI=mongodb://mongo:27017
-      - DBNAME=gamedb
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    ports:
-      - 8080:3000
-    depends_on:
-      - mongo
-    networks:
-      - app
+  # apiserver:
+  #   container_name: apiserver
+  #   restart: always
+  #   env_file:
+  #     - ./api/.env
+  #   environment:
+  #     - PORT=3000
+  #     - DB_URI=mongodb://mongo:27017
+  #     - DB_NAME=gamedb
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8080:3000
+  #   depends_on:
+  #     - mongo
+  #   networks:
+  #     - app
 
-networks: # изолируем от другик контейнеров на сервере
-  app:
-    driver: bridge
+# networks: # изолируем от другик контейнеров на сервере
+#   app:
+#     driver: bridge
 volumes:
   mongo-data:
     driver: local
-
