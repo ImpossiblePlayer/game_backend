@@ -13,11 +13,13 @@ const changeNickname = async (req: TypedChangeNicknameReq, res: Response) => {
 				{ id: req.userId },
 				{ nickname: newNickname }
 			);
-		} else {
-			res
-				.status(HTTP_STATUSES.BAD_REQUEST_400)
-				.json({ message: 'invalid request' });
+			return res
+				.status(HTTP_STATUSES.OK_200)
+				.json({ message: 'updated successfully' });
 		}
+		res
+			.status(HTTP_STATUSES.BAD_REQUEST_400)
+			.json({ message: 'invalid request' });
 	} catch (err) {
 		console.log(err);
 		res.status(HTTP_STATUSES.ITERNAL_ERROR_500);

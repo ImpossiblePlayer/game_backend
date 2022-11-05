@@ -14,8 +14,8 @@ import {
 } from '../types';
 
 // константы для JWT
-const SECRET = process.env.SECRET;
-const TOKEN_LIFETIME = process.env.TOKEN_LIFETIME;
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_ACCESS_TOKEN_LIFETIME = process.env.JWT_ACCESS_TOKEN_LIFETIME;
 
 const Register = async (req: TypedRegisterBodyReq, res: Response<{}>) => {
 	try {
@@ -33,9 +33,9 @@ const Register = async (req: TypedRegisterBodyReq, res: Response<{}>) => {
 
 		const user = await doc.save(); // сохраняем пользователя в БД
 
-		// создаем токен, который работает <TOKEN_LIFETIME> по времени
-		const token: string = await jwt.sign({ _id: user._id }, SECRET, {
-			expiresIn: TOKEN_LIFETIME,
+		// создаем токен, который работает <JWT_ACCESS_TOKEN_LIFETIME> по времени
+		const token: string = await jwt.sign({ _id: user._id }, JWT_ACCESS_SECRET, {
+			expiresIn: JWT_ACCESS_TOKEN_LIFETIME,
 		});
 
 		// отделяем хэш пароля от всего остального ...
@@ -73,8 +73,8 @@ const Login = async (req: TypedLoginBodyReq, res: Response) => {
 				.json('invalid login or password');
 		}
 
-		const token: string = jwt.sign({ _id: user._id }, SECRET, {
-			expiresIn: TOKEN_LIFETIME,
+		const token: string = jwt.sign({ _id: user._id }, JWT_ACCESS_SECRET, {
+			expiresIn: JWT_ACCESS_TOKEN_LIFETIME,
 		});
 
 		// отделяем хэш пароля от всего остального ...

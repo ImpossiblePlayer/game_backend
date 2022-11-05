@@ -10,28 +10,28 @@ services:
     #   MONGO_INITDB_ROOT_PASSWORD: pskrhbvkshl2i9r870k
     ports:
       - 2170:27017
-    networks:
-      - app
+    # networks:
+    #   - app
     volumes:
       - mongo-data:/data/db
-  apiserver:
-    container_name: apiserver
-    restart: always
-    environment:
-      PORT: 3000
-      DB_URI: mongodb://mongo:27017
-      DBNAME: users
-      SECRET: dlbjlfbdijlsvmld
-      TOKEN_LIFETIME: 7d
-    build:
-      context: ./api
-      dockerfile: Dockerfile
-    ports:
-      - 8080:3000
-    depends_on:
-      - mongo
-    networks:
-      - app
+  # apiserver:
+  #   container_name: apiserver
+  #   restart: always
+  #   environment:
+  #     PORT: 3000
+  #     DB_URI: mongodb://mongo:27017
+  #     DBNAME: users
+  #     SECRET: dlbjlfbdijlsvmld
+  #     TOKEN_LIFETIME: 7d
+  #   build:
+  #     context: ./api
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - 8080:3000
+  #   depends_on:
+  #     - mongo
+  #   networks:
+  #     - app
 
 networks: # изолируем от другик контейнеров на сервере
   app:
@@ -39,4 +39,3 @@ networks: # изолируем от другик контейнеров на с�
 volumes:
   mongo-data:
     driver: local
-
