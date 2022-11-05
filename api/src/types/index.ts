@@ -3,6 +3,8 @@ import { TypedLoginBodyReq } from './loginTypes';
 import { TypedChangePasswordReq } from './changePasswordTypes';
 import { TypedChangeNicknameReq } from './changeNicknameTypes';
 import { TypedGetMeBodyReq } from './getMeTypes';
+import { TypedLogoutBodyReq } from './logoutTypes';
+import { TypedService } from './serviceTypes';
 
 export {
 	TypedRegisterBodyReq,
@@ -10,4 +12,6 @@ export {
 	TypedGetMeBodyReq,
 	TypedChangePasswordReq,
 	TypedChangeNicknameReq,
+	TypedLogoutBodyReq,
+	TypedService,
 };

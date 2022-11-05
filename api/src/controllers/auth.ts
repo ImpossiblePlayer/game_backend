@@ -1,9 +1,12 @@
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import cookieparsers from 'cookie-parser';
 
-require('dotenv').config(); // переменные из .env файла
 import { HTTP_STATUSES } from '../index';
+
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const TOKEN_LIFETIME = process.env.TOKEN_LIFETIME;
 
 import { UserModel } from '../models';
 
@@ -11,37 +14,24 @@ import {
 	TypedGetMeBodyReq,
 	TypedLoginBodyReq,
 	TypedRegisterBodyReq,
+	TypedLogoutBodyReq,
 } from '../types';
+import { UserService } from '../services/';
 
 // константы для JWT
-const SECRET = process.env.SECRET;
-const TOKEN_LIFETIME = process.env.TOKEN_LIFETIME;
 
-const Register = async (req: TypedRegisterBodyReq, res: Response<{}>) => {
+const Register = async (req: TypedRegisterBodyReq, res: Response) => {
 	try {
-		// хэширование пароля
-		const password: string = req.body.password;
-		const salt = await bcrypt.genSalt(10);
-		const hash: string = await bcrypt.hash(password, salt);
-
-		// создаем нового пользователя
-		const doc = new UserModel({
-			email: req.body.email,
-			passwordHash: hash,
-			nickname: req.body.nickname,
+		const userData = await UserService.registration(
+			req.body.email,
+			req.body.password,
+			req.body.nickname
+		);
+		res.cookie('refreshToken', userData.refreshToken, {
+			maxAge: 30 * 24 * 60 * 60 * 1000,
+			httpOnly: true,
 		});
-
-		const user = await doc.save(); // сохраняем пользователя в БД
-
-		// создаем токен, который работает <TOKEN_LIFETIME> по времени
-		const token: string = await jwt.sign({ _id: user._id }, SECRET, {
-			expiresIn: TOKEN_LIFETIME,
-		});
-
-		// отделяем хэш пароля от всего остального ...
-		const { passwordHash, ...userData } = await user._doc;
-		// ... и возвращаем вместе с токеном
-		res.status(HTTP_STATUSES.CREATED_201).json({ ...userData, token });
+		return res.json(userData);
 	} catch (err) {
 		console.log(err);
 		res
@@ -73,7 +63,7 @@ const Login = async (req: TypedLoginBodyReq, res: Response) => {
 				.json('invalid login or password');
 		}
 
-		const token: string = jwt.sign({ _id: user._id }, SECRET, {
+		const token: string = jwt.sign({ _id: user._id }, JWT_ACCESS_SECRET, {
 			expiresIn: TOKEN_LIFETIME,
 		});
 
@@ -88,6 +78,8 @@ const Login = async (req: TypedLoginBodyReq, res: Response) => {
 			.json({ message: 'could not authorize' });
 	}
 };
+
+const Logout = async (req: TypedLogoutBodyReq, res: Response) => {};
 
 const GetMe = async (req: TypedGetMeBodyReq, res: Response) => {
 	try {
@@ -108,4 +100,4 @@ const GetMe = async (req: TypedGetMeBodyReq, res: Response) => {
 	}
 };
 
-export { Register, Login, GetMe };
+export { Register, Login, Logout, GetMe };
