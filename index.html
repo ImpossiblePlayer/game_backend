@@ -37,7 +37,8 @@
 
 			ws = new WebSocket('ws://localhost:8080');
 			ws.onopen = () => {
-				console.log('connection opened');
+				showMessage('connection opened');
+				ws.send('hello server!');
 			};
 			ws.onmessage = ({ data }, isBinary) => {
 				isBinary ? data : data.text().then((txt) => showMessage(txt));

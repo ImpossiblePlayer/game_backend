@@ -13,7 +13,6 @@ RUN yarn build
 RUN yarn remove bcrypt
 RUN yarn add bcrypt
 
-ENV PORT=3000
 EXPOSE ${PORT}
 
 CMD ["yarn", "start"]

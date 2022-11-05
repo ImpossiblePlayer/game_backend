@@ -17,12 +17,12 @@ services:
   apiserver:
     container_name: apiserver
     restart: always
+    env_file:
+      - ./api/.env
     environment:
-      PORT: 3000
-      DB_URI: mongodb://mongo:27017
-      DBNAME: users
-      SECRET: dlbjlfbdijlsvmld
-      TOKEN_LIFETIME: 7d
+      - PORT=3000
+      - DB_URI=mongodb://mongo:27017
+      - DBNAME=gamedb
     build:
       context: ./api
       dockerfile: Dockerfile

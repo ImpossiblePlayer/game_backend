@@ -1,23 +1,24 @@
-import express from 'express';
 import http from 'http';
+import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import { Server as socketio } from 'socket.io';
 import mongoose from 'mongoose';
-import { WebSocket } from 'ws';
-
-require('dotenv').config(); // переменные из .env файла
 
 // валидация
 import { regValidation, loginValidation } from './validation/authValid';
+
+require('dotenv').config(); // переменные из .env файла
 
 // фунцкии эндпоинтов и webSocket
 import {
 	ProfileControllers,
 	SessionControllers,
 	UserControllers,
-	WSController,
 } from './controllers';
 
 import Utils from './utils';
+import { checkAuth } from './utils/checkAuth';
 
 // константы базы данных
 // const DBUSERNAME = process.env.DBUSERNAME;
@@ -36,23 +37,17 @@ export const HTTP_STATUSES = {
 };
 
 // используем порт, указанный в .env файле. иначе 3000
-const port = process.env.PORT ?? 3000;
+const port = process.env.PORT || 3000;
 
 export const app = express();
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-
-mongoose
-	.connect(`${DB_URI}/${DBNAME}`)
-	.then(() => {
-		console.log('DB ok');
-	})
-	.catch((err) => {
-		console.log('DB error: ' + err);
-	});
+export const server = http.createServer(app);
+export const io = new socketio(server, {
+	transports: ['websocket'],
+});
 
 app.use(express.json());
 app.use(cors());
+app.use(cookieParser());
 
 app.post(
 	'/auth/register',
@@ -60,12 +55,15 @@ app.post(
 	Utils.handleValidationErrors,
 	UserControllers.Register
 );
+app.get('/auth/activate/:link');
 app.post(
 	'/auth/login',
 	loginValidation,
 	Utils.handleValidationErrors,
 	UserControllers.Login
 );
+app.post('/logout', checkAuth, UserControllers.Logout);
+app.get('/refresh');
 app.get('/auth/me', Utils.checkAuth, UserControllers.GetMe);
 
 app.post(
@@ -73,6 +71,7 @@ app.post(
 	Utils.checkAuth,
 	ProfileControllers.changeNickname
 );
+
 app.post(
 	'/profile/changepassword',
 	Utils.checkAuth,
@@ -81,10 +80,37 @@ app.post(
 
 app.post('/session/join/:id', Utils.checkAuth, SessionControllers.JoinSession);
 
-wss.on('connection', (ws) => {
-	WSController(wss, ws, WebSocket);
+// обработка нового подключения
+io.on('connection', (socket) => {
+	console.log('new client connected');
+	socket.emit('message', 'successful connection');
+
+	// отправляет сообщение всем, кроме нового пользователя
+	socket.broadcast.emit('message', 'new user connected');
+
+	socket.on('disconnect', () => {
+		io.emit('message', 'user has disconnected');
+	});
+
+	socket.on('chatMessage', (msg) => {
+		console.log(msg);
+	});
 });
 
-server.listen(port, () => {
-	console.log(`listening on port ${port}`);
-});
+(async () => {
+	try {
+		await mongoose
+			.connect(`${DB_URI}/${DBNAME}`)
+			.then(() => {
+				console.log('DB ok');
+			})
+			.catch((err) => {
+				console.log('DB error: ' + err);
+			});
+		server.listen(port, () => {
+			console.log(`listening on port ${port}`);
+		});
+	} catch (err) {
+		console.log(err);
+	}
+})();
