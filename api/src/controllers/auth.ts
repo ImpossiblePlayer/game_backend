@@ -5,9 +5,6 @@ import cookieparsers from 'cookie-parser';
 
 import { HTTP_STATUSES } from '../index';
 
-const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
-const JWT_ACCESS_TOKEN_LIFETIME = process.env.JWT_ACCESS_TOKEN_LIFETIME;
-
 import { UserModel } from '../models';
 
 import {
@@ -19,10 +16,14 @@ import {
 import { UserService } from '../services/';
 
 // константы для JWT
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
+const JWT_ACCESS_TOKEN_LIFETIME = process.env.JWT_ACCESS_TOKEN_LIFETIME;
+
+const CLIENT_URL = process.env.CLIENT_URL;
 
 const Register = async (req: TypedRegisterBodyReq, res: Response) => {
 	try {
-		const userData = await UserService.registration(
+		const userData = await UserService.register(
 			req.body.email,
 			req.body.password,
 			req.body.nickname
@@ -37,6 +38,16 @@ const Register = async (req: TypedRegisterBodyReq, res: Response) => {
 		res
 			.status(HTTP_STATUSES.ITERNAL_ERROR_500)
 			.json({ message: 'could not create user' });
+	}
+};
+
+const Activate = async (req, res) => {
+	try {
+		const activationLink = req.params.link;
+		await UserService.activate(activationLink);
+		return res.redirect(CLIENT_URL);
+	} catch (err) {
+		console.log(err);
 	}
 };
 

@@ -18,19 +18,22 @@ import {
 } from './controllers';
 
 import Utils from './utils';
-import { checkAuth } from './utils/checkAuth';
+import { ErrorMiddleware } from './middleware';
 
 // константы базы данных
-// const DBUSERNAME = process.env.DBUSERNAME;
-// const DBPASSWORD = process.env.DBPASSWORD;
-const DB_URI = process.env.DB_URI;
-const DB_NAME = process.env.DB_NAME;
+const DB_URI = process.env.DB_URI,
+	DB_PROTOCOL = process.env.DB_PROTOCOL,
+	DB_NAME = process.env.DB_NAME,
+	DB_USERNAME = process.env.DB_USERNAME,
+	DB_PASSWORD = process.env.DB_PASSWORD,
+	DB_QUERY_STRING = process.env.DB_QUERY_STRING;
 
 export const HTTP_STATUSES = {
 	OK_200: 200,
 	CREATED_201: 201,
 	NO_CONTENT_204: 204,
 	BAD_REQUEST_400: 400,
+	UNAUTHORIZED_401: 401,
 	FORBIDDEN_403: 403,
 	NOT_FOUND_404: 404,
 	ITERNAL_ERROR_500: 500,
@@ -48,6 +51,7 @@ export const io = new socketio(server, {
 app.use(express.json());
 app.use(cors());
 app.use(cookieParser());
+app.use(ErrorMiddleware);
 
 app.post(
 	'/auth/register',
@@ -62,8 +66,8 @@ app.post(
 	Utils.handleValidationErrors,
 	UserControllers.Login
 );
-app.post('/logout', checkAuth, UserControllers.Logout);
-app.get('/refresh');
+app.post('/auth/logout', Utils.checkAuth, UserControllers.Logout);
+app.get('/auth/refresh');
 app.get('/auth/me', Utils.checkAuth, UserControllers.GetMe);
 
 app.post(
@@ -100,17 +104,23 @@ io.on('connection', (socket) => {
 (async () => {
 	try {
 		await mongoose
-			.connect(`${DB_URI}/${DB_NAME}`)
+			.connect(
+				`${DB_PROTOCOL}://${DB_USERNAME}:${DB_PASSWORD}@${DB_URI}/${DB_NAME}?${DB_QUERY_STRING}`
+			)
 			.then(() => {
 				console.log('DB ok');
 			})
 			.catch((err) => {
-				console.log('DB error: ' + err);
+				console.log(`DB error: ${err}`);
 			});
-		server.listen(port, () => {
-			console.log(`listening on port ${port}`);
-		});
 	} catch (err) {
 		console.log(err);
 	}
 })();
+
+server.listen(port, () => {
+	console.log(`listening on port ${port}`);
+});
+console.log(
+	`${DB_PROTOCOL}://${DB_USERNAME}:${DB_PASSWORD}@${DB_URI}/${DB_NAME}?${DB_QUERY_STRING}`
+);

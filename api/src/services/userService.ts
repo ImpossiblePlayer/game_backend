@@ -7,6 +7,8 @@ import MailService from './mailService';
 
 import { TypedService } from '../types';
 import TokenService from './tokenService';
+import user from '../models/user';
+import { ApiError } from '../err/apiError';
 
 class UserService implements TypedService {
 	JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;
@@ -14,11 +16,11 @@ class UserService implements TypedService {
 	JWT_ACCESS_TOKEN_LIFETIME = process.env.JWT_ACCESS_TOKEN_LIFETIME;
 	API_URL = process.env.API_URL;
 
-	registration = async (email, password, nickname) => {
+	register = async (email, password, nickname) => {
 		// проверяем наличие пользователя с таким email
 		const candidate = await UserModel.findOne({ email });
 		if (candidate) {
-			throw new Error(`user with email ${email} already exists`);
+			throw ApiError.BadRequest(`user with email ${email} already exists`);
 		}
 
 		// хэширование пароля
@@ -54,6 +56,15 @@ class UserService implements TypedService {
 		const { passwordHash, ...userData } = await user._doc;
 		// ... и возвращаем вместе с токенами
 		return { ...userData, accessToken, refreshToken };
+	};
+
+	activate = async (activationLink) => {
+		const candidate = await UserModel.findOne({ activationLink });
+		if (!candidate) {
+			throw ApiError.BadRequest('incorrect activation link');
+		}
+		candidate.isActivated = true;
+		await candidate.save();
 	};
 }
 
