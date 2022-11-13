@@ -10,8 +10,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     ports:
       - 2170:27017
-    # networks:
-    #   - app
+    networks:
+      - app
     volumes:
       - mongo-data:/data/db
   apiserver:
@@ -38,7 +38,7 @@ services:
     networks:
       - app
 
-networks: # изолируем от другик контейнеров на сервере
+networks: # изолируемся от другик контейнеров на сервере
   app:
     driver: bridge
 volumes:
