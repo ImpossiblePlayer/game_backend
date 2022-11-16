@@ -7,11 +7,11 @@ WORKDIR /usr/src/app
 COPY package.json .
 RUN yarn
 
-COPY . .
-RUN yarn build
-
 RUN yarn remove bcrypt
 RUN yarn add bcrypt
+
+COPY . .
+RUN yarn build
 
 EXPOSE ${PORT}
 
