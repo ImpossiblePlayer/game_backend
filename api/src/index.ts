@@ -1,8 +1,8 @@
 import http from 'http';
 import express from 'express';
 import cors from 'cors';
-import cookieParser from 'cookie-parser';
-import { Server as socketio } from 'socket.io';
+// import cookieParser from 'cookie-parser';
+// import { Server as socketio } from 'socket.io';
 import mongoose from 'mongoose';
 
 // валидация
@@ -44,13 +44,13 @@ const port = process.env.PORT || 3000;
 
 export const app = express();
 export const server = http.createServer(app);
-export const io = new socketio(server, {
-	transports: ['websocket'],
-});
+// export const io = new socketio(server, {
+// 	transports: ['websocket'],
+// });
 
 app.use(express.json());
 app.use(cors());
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(ErrorMiddleware);
 
 app.post(
@@ -85,21 +85,21 @@ app.post(
 app.post('/session/join/:id', Utils.checkAuth, SessionControllers.JoinSession);
 
 // обработка нового подключения
-io.on('connection', (socket) => {
-	console.log('new client connected');
-	socket.emit('message', 'successful connection');
+// io.on('connection', (socket) => {
+// 	console.log('new client connected');
+// 	socket.emit('message', 'successful connection');
 
-	// отправляет сообщение всем, кроме нового пользователя
-	socket.broadcast.emit('message', 'new user connected');
+// 	// отправляет сообщение всем, кроме нового пользователя
+// 	socket.broadcast.emit('message', 'new user connected');
 
-	socket.on('disconnect', () => {
-		io.emit('message', 'user has disconnected');
-	});
+// 	socket.on('disconnect', () => {
+// 		io.emit('message', 'user has disconnected');
+// 	});
 
-	socket.on('chatMessage', (msg) => {
-		console.log(msg);
-	});
-});
+// 	socket.on('chatMessage', (msg) => {
+// 		console.log(msg);
+// 	});
+// });
 
 (async () => {
 	try {
