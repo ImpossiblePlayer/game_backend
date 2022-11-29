@@ -14,12 +14,24 @@ const HTTP_STATUS_CODES = {
 // используем порт, указанный в .env файле. иначе 3000
 const PORT = process.env.PORT || 3000;
 
+const API_URL = process.env.API_URL;
+
 const DB_URI = process.env.DB_URI,
 	DB_PROTOCOL = process.env.DB_PROTOCOL,
 	DB_NAME = process.env.DB_NAME,
 	DB_USERNAME = process.env.DB_USERNAME,
 	DB_PASSWORD = process.env.DB_PASSWORD,
 	DB_QUERY_STRING = process.env.DB_QUERY_STRING;
+
+const JWT_ACCESS_SECRET = process.env.JWT_ACCESS_SECRET,
+	JWT_REFRESH_SECRET = process.env.JWT_REFRESH_SECRET,
+	JWT_ACCESS_TOKEN_LIFETIME = process.env.JWT_ACCESS_TOKEN_LIFETIME,
+	JWT_REFRESH_TOKEN_LIFETIME = process.env.JWT_REFRESH_TOKEN_LIFETIME;
+
+const SMTP_HOST = process.env.SMTP_HOST,
+	SMTP_PORT = process.env.SMTP_PORT,
+	SMTP_USER = process.env.SMTP_USER,
+	SMTP_PASSWORD = process.env.SMTP_PASSWORD;
 
 export {
 	HTTP_STATUS_CODES,
@@ -30,4 +42,13 @@ export {
 	DB_URI,
 	DB_NAME,
 	DB_QUERY_STRING,
+	JWT_ACCESS_SECRET,
+	JWT_REFRESH_SECRET,
+	JWT_ACCESS_TOKEN_LIFETIME,
+	JWT_REFRESH_TOKEN_LIFETIME,
+	API_URL,
+	SMTP_HOST,
+	SMTP_PORT,
+	SMTP_USER,
+	SMTP_PASSWORD,
 };

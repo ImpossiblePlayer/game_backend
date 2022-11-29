@@ -1,16 +1,5 @@
 import { Document, Schema, model } from 'mongoose';
-
-interface UserResult<T> extends Document {
-	_doc: T;
-}
-
-interface User extends UserResult<User> {
-	nickname: string;
-	email: string;
-	passwordHash: string;
-	isActivated: boolean;
-	activationLink: string;
-}
+import { User } from '../types';
 
 const UserSchema = new Schema<User>(
 	{

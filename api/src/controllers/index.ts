@@ -1,3 +1,4 @@
-import * as AuthControllers from './authControllers';
+import Register from './registerController';
 
+const AuthControllers = { Register };
 export { AuthControllers };
