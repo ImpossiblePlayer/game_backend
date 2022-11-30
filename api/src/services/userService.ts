@@ -4,7 +4,7 @@ import * as uuid from 'uuid';
 import { UserModel } from '../models';
 import MailService from './mailService';
 import TokenService from './tokenService';
-import { ApiError } from '../err';
+import { ApiError } from '../errors';
 
 import { TypedUserService } from '../types';
 import {
@@ -42,7 +42,6 @@ class UserService implements TypedUserService {
 		});
 		const user = await doc.save(); // сохраняем пользователя в БД
 
-		// создаем токены, которые работают <JWT_#_TOKEN_LIFETIME> по времени
 		const { accessToken, refreshToken } = TokenService.generateTokens({
 			_id: user._id,
 			email: user.email,
