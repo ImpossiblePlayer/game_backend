@@ -27,7 +27,7 @@ class UserService implements TypedService {
 		const salt = await bcrypt.genSalt(10);
 		const hash: string = await bcrypt.hash(password, salt);
 
-		const activationLink = uuid.v4(); // создаем уникальную строку
+		const activationLink: string = uuid.v4(); // создаем уникальную строку
 
 		// создаем нового пользователя
 		const doc = new UserModel({

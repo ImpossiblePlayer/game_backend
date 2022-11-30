@@ -105,7 +105,7 @@ app.post('/session/join/:id', Utils.checkAuth, SessionControllers.JoinSession);
 	try {
 		await mongoose
 			.connect(
-				`${DB_PROTOCOL}://${DB_USERNAME}:${DB_PASSWORD}@${DB_URI}/${DB_NAME}?${DB_QUERY_STRING}`
+				`${DB_PROTOCOL}://${DB_USERNAME}:${DB_PASSWORD}@${DB_URI}?${DB_QUERY_STRING}`
 			)
 			.then(() => {
 				console.log('DB ok');
