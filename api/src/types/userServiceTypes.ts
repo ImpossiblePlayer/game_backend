@@ -1,10 +1,16 @@
-import { User } from '.';
+import { UserDto } from '../dtos';
 
-// type TypedRegister = Omit<User, 'passwordHash'>;
+interface TypedRegister {
+	(email: string, password: string, nickname: string): Promise<{
+		accessToken: string;
+		refreshToken: string;
+		user: any;
+	}>;
+}
 
 interface TypedUserService {
-	register: any;
+	register: TypedRegister;
 	activate: any;
 }
 
-export { TypedUserService };
+export { TypedUserService, TypedRegister };

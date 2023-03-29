@@ -7,20 +7,13 @@ import TokenService from './tokenService';
 import { ApiError } from '../errors';
 
 import { TypedUserService } from '../types';
-import {
-	JWT_ACCESS_SECRET,
-	JWT_ACCESS_TOKEN_LIFETIME,
-	JWT_REFRESH_SECRET,
-	API_URL,
-} from '../constants';
+import { API_URL } from '../constants';
+import { UserDto } from '../dtos';
 
 class UserService implements TypedUserService {
-	// private _JWT_ACCESS_SECRET: string = JWT_ACCESS_SECRET;
-	// private _JWT_REFRESH_SECRET: string = JWT_REFRESH_SECRET;
-	// private _JWT_ACCESS_TOKEN_LIFETIME: string = JWT_ACCESS_TOKEN_LIFETIME;
 	private _API_URL: string = API_URL;
 
-	register = async (email, password, nickname) => {
+	register = async (email: string, password: string, nickname: string) => {
 		// проверяем наличие пользователя с таким email
 		const candidate = await UserModel.findOne({ email });
 		if (candidate) {
@@ -42,10 +35,9 @@ class UserService implements TypedUserService {
 		});
 		const user = await doc.save(); // сохраняем пользователя в БД
 
+		const userDto = new UserDto(user);
 		const { accessToken, refreshToken } = TokenService.generateTokens({
-			_id: user._id,
-			email: user.email,
-			isActivated: user.isActivated,
+			...userDto,
 		});
 
 		await MailService.sendActivationEmail(
@@ -55,10 +47,9 @@ class UserService implements TypedUserService {
 
 		await TokenService.saveToken(user._id, refreshToken); // сохраняем обновляющий токен
 
-		// отделяем хэш пароля от всего остального ...
-		const { passwordHash, ...userData } = await user._doc;
-		// ... и возвращаем вместе с токенами
-		return { ...userData, accessToken, refreshToken };
+		const result = { accessToken, refreshToken, user: userDto };
+		// ... возвращаем данные пользователя вместе с токенами
+		return result;
 	};
 
 	activate = async (activationLink) => {

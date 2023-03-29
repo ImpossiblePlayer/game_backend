@@ -9,10 +9,10 @@ class TokenService implements TypedTokenService {
 	JWT_REFRESH_TOKEN_LIFETIME = process.env.JWT_REFRESH_TOKEN_LIFETIME;
 
 	generateTokens = (payload: JwtPayload) => {
-		const accessToken = jwt.sign(payload, this.JWT_ACCESS_SECRET, {
+		const accessToken: string = jwt.sign(payload, this.JWT_ACCESS_SECRET, {
 			expiresIn: this.JWT_ACCESS_TOKEN_LIFETIME,
 		});
-		const refreshToken = jwt.sign(payload, this.JWT_REFRESH_SECRET, {
+		const refreshToken: string = jwt.sign(payload, this.JWT_REFRESH_SECRET, {
 			expiresIn: this.JWT_REFRESH_TOKEN_LIFETIME,
 		});
 

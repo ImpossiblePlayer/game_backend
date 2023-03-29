@@ -3,6 +3,7 @@ interface UserResult<T> extends Document {
 }
 
 interface User extends UserResult<User> {
+	_id: string;
 	nickname: string;
 	email: string;
 	passwordHash?: string;
