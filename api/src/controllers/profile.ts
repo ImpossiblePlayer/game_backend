@@ -38,7 +38,7 @@ const changePassword = async (req: TypedChangePasswordReq, res: Response) => {
 
 		const newPassword: string = req.body.newPassword;
 		const salt = await bcrypt.genSalt(10);
-		const hash: string = await bcrypt.hash(password, salt);
+		const hash: string = await bcrypt.hash(newPassword, salt);
 		if (isValidPassword) {
 			await UserModel.findOneAndUpdate(
 				{ id: req.userId },
