@@ -9,9 +9,9 @@ POST http://localhost:8080/auth/register/
 Content-Type: application/json
 
 {
-  "email": "email@server.com",
+  "email": "email9023468@server.com",
   "password": "password",
-  "nickname": "nickname"
+  "nickname": "nickname22092"
 }
 
 ###

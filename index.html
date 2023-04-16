@@ -1,0 +1,63 @@
+<h1>messenger</h1>
+<pre id="messages" style="height: 400px; overflow: scroll"></pre>
+<input
+	type="text"
+	id="msgInput"
+	placeholder="Type ..."
+	style="display: block; width: 300px; margin-bottom: 10px; padding: 10px"
+/>
+<button
+	type="button"
+	onclick="sendBtnClick()"
+	id="send"
+	style="height: 50px; width: 100px"
+>
+	send
+</button>
+
+<script>
+	const main = () => {
+		const messages = document.querySelector('#messages');
+		const msgInput = document.querySelector('#msgInput');
+		const sendBtn = document.querySelector('#send');
+
+		let ws;
+
+		const showMessage = (message) => {
+			messages.textContent += `\n\n${message}`;
+			messages.scrollTop = messages.scrollHeight;
+			msgInput.value = '';
+		};
+
+		const init = () => {
+			if (ws) {
+				ws.oneror = ws.onopen = ws.onclose = null;
+				ws.close();
+			}
+
+			ws = new WebSocket('ws://localhost:8080');
+			ws.onopen = () => {
+				showMessage('connection opened');
+				ws.send('hello server!');
+			};
+			ws.onmessage = ({ data }, isBinary) => {
+				isBinary ? data : data.text().then((txt) => showMessage(txt));
+			};
+			ws.onclose = () => {
+				ws = null;
+			};
+
+			sendBtnClick = () => {
+				if (!ws) return showMessage('No WebSocket connection :(');
+
+				ws.send(msgInput.value);
+				console.log(msgInput.value);
+				showMessage(msgInput.value);
+			};
+		};
+
+		init();
+		console.log(ws);
+	};
+	main();
+</script>
